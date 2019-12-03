@@ -13,23 +13,26 @@ namespace ExampleApp
             using (var context = new Context())
             {
                 context.Database.EnsureCreated();
-                context.Database.ExecuteSqlCommand("REPLACE INTO address (id, countryId) values (1,1)");
-                context.Database.ExecuteSqlCommand("REPLACE INTO address (id, countryId) values (2,1)");
-                context.Database.ExecuteSqlCommand("REPLACE INTO address (id, countryId) values (3,2)");
-                
+
                 context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (1,'en')");
                 context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (1,'de')");
-                context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (2,'en')");
-                context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (2,'de')");
+                context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (1,'fr')");
+                context.Database.ExecuteSqlCommand("REPLACE INTO address_country (id, locale) values (1,'nl')");
+                
+                context.Database.ExecuteSqlCommand("REPLACE INTO address_state (id, locale, countryId) values (1,'en',1)");
+                context.Database.ExecuteSqlCommand("REPLACE INTO address_state (id, locale, countryId) values (1,'de',1)");
+                
                 context.SaveChanges();
             }
-
+            
             string addresses;
+            List<State> states;
             using (var context = new Context())
             {
-                addresses = JsonConvert.SerializeObject(context.Addresses.Include(a => a.CountryLocale).ToList());
+                states = context.States.AsNoTracking().Include(a => a.CountryLocales).ToList();
+                addresses = JsonConvert.SerializeObject(states);
             }
-
+            
             Console.WriteLine(addresses);
             Console.ReadLine();
         }

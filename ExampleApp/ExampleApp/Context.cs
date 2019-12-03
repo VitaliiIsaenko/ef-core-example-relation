@@ -8,24 +8,30 @@ namespace ExampleApp
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(
-                @"Data Source=addresses.db");
+                @"Data Source=../../../addresses.db");
             base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AddressDto>()
-                .ToTable("address");
-
-            modelBuilder.Entity<CountryLocaleDto>()
+            modelBuilder.Entity<State>()
+                .ToTable("address_state");
+            modelBuilder.Entity<Country>()
                 .ToTable("address_country");
-
-            modelBuilder.Entity<CountryLocaleDto>()
-                .HasKey(cl => new {cl.Id, cl.Locale});
-
+            
+            modelBuilder.Entity<Country>().HasKey(c => new {c.Id, c.Locale});
+            modelBuilder.Entity<State>().HasKey(s => new {s.Id, s.Locale});
+            
+            modelBuilder.Entity<State>()
+                .HasMany(a => a.CountryLocales)
+                .WithOne()
+                .HasForeignKey(x => x.Id)
+                .HasPrincipalKey(x => x.CountryId);
+            
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<AddressDto> Addresses { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<Country> Countries { get; set; }
     }
 }
