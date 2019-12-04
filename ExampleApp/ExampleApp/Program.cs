@@ -26,10 +26,9 @@ namespace ExampleApp
             }
             
             string addresses;
-            List<State> states;
             using (var context = new Context())
             {
-                states = context.States.AsNoTracking().Include(a => a.CountryLocales).ToList();
+                var states = context.States.AsNoTracking().Include(a => a.CountryLocales).ToList();
                 addresses = JsonConvert.SerializeObject(states);
             }
             
